@@ -78,25 +78,19 @@ void lclcmd(int ch)
  {
   newline();
   encoderStop();
-  printf("encoder cycle %d: ",  cmpTmr.encCycLen);
-  flushBuf();
-  if (getnum())
+  if (query(&getnum, "encoder cycle %d: ",  cmpTmr.encCycLen))
   {
    if (val != 0)
     cmpTmr.encCycLen = val;
   }
-  printf("\ninternal cycle %d: ", cmpTmr.intCycLen);
-  flushBuf();
-  if (getnum())
+  if (query(&getnum, "internal cycle %d: ", cmpTmr.intCycLen))
   {
    if (val != 0)
     cmpTmr.intCycLen = val;
   }
   if (cmpTmr.preScale == 0)
    cmpTmr.preScale = 1;
-  printf("\npre scaler %d: ", cmpTmr.preScale);
-  flushBuf();
-  if (getnum())
+  if (query(&getnum, "pre scaler %d: ", cmpTmr.preScale))
   {
    if (val != 0)
     cmpTmr.preScale = val;
@@ -163,9 +157,7 @@ void lclcmd(int ch)
  }
  else if (ch == 'l')
  {
-  printf("\nencoder [%d] lines : ", encLines);
-  flushBuf();
-  if (getnum())
+  if (query(&getnum, "encoder [%d] lines : ", encLines))
   {
    encLines = val;
    encPulse = encLines * 4;
@@ -182,9 +174,7 @@ void lclcmd(int ch)
 	  encLines, encPulse);
    rpm = (unsigned int) (testPulseMin / encPulse);
   }
-  printf("rpm [%d]: ", rpm);
-  flushBuf();
-  if (getnum())
+  if (query(&getnum, "rpm [%d]: ", rpm))
   {
    rpm = val;
   }
@@ -242,23 +232,17 @@ void lclcmd(int ch)
 
   while (1)
   {
-   printf("\nreg ");
-   flushBuf();
-   if (getnum())
+   if (query(&getnum, "\nreg "))
     reg = val;
    else
     break;
 
-   printf("\nmask ");
-   flushBuf();
-   if (getnum())
+   if (query(&getnum, "mask "))
     mask = val;
-    
-   printf("\ninvert ");
-   flushBuf();
-   if (getnum())
+
+   if (query(&getnum, "invert "))
     invert = val != 0;
-  
+
    int set = (((reg & mask) != 0) ^ invert);
    int clr = (((reg & mask) == 0) ^ invert);
 
@@ -266,21 +250,16 @@ void lclcmd(int ch)
 	  reg, mask, invert, set, clr);
   }
  }
- 
  else if (ch == 'F')
  {
-  printf("\nIRQn: ");
-  flushBuf();
-  if (getnum())
+  if (query(&getnum, "IRQn: "))
   {
    HAL_NVIC_EnableIRQ((IRQn_Type) val);
   }
  }
  else if (ch == 'I')
  {
-  printf("\nPort: ");
-  flushBuf();
-  ch = getx();
+  ch = query("\nPort: ");
   unsigned int i;
   P_PORT_LIST p = portList;
   GPIO_TypeDef *port = 0;
@@ -295,9 +274,7 @@ void lclcmd(int ch)
   }
   if (port != 0)
   {
-   printf("\nmask: ");
-   flushBuf();
-   if (gethex())
+   if (query(&gethex, "\nmask: "))
    {
     port->ODR = val;
     printf("\n");
@@ -309,9 +286,7 @@ void lclcmd(int ch)
 #if 1
  else if (ch == 'Q')		/* print peripheral info */
  {
-  printf(" flag: ");
-  flushBuf();
-  if (getnum() == 0)
+  if (query(&getnum, " flag [0x%x]: ", lastFlags) == 0)
   {
    val = lastFlags;
   }
@@ -459,8 +434,7 @@ void lclcmd(int ch)
 #if 0
  else if (ch == 'p')
  {
-  putBufChar(' ');
-  if (getnum())
+  if (query(&getnm, ' '))
   {
    print = val;
   }

@@ -9,6 +9,7 @@
 #include <math.h>
 #include <stdbool.h>
 #include <limits.h>
+#include <stdarg.h>
 
 #include "remvar.h"
 #include "serialio.h"

@@ -149,6 +149,7 @@ int16_t syncLoop(void)
 
  ledUpdTime = millis();
  ledSet();
+ printf("readySet()\n");
  readySet();
  while (1)			/* main loop */
  {
@@ -238,8 +239,9 @@ void runControl()
  {
  case ST_IDLE:			/* 0 idle */
 //  if (startEQ0())		/* if time to start */
-  if (startClr())		/* if time to start */
+  if (startIsClr())		/* if time to start */
   {
+   printf("startClr()\n");
    encoderMeasure();		/* start rpm measurement */
    runTime = millis();		/* save start time */
    runState = ST_WAIT_RPM;	/* wait for measurement */
@@ -268,7 +270,7 @@ void runControl()
 
  case ST_WAIT_DONE:		/* 2 wait for start cleared */
 //  if (startNE0())		/* if start bit cleared */
-  if (startSet())		/* if start bit cleared */
+  if (startIsSet())		/* if start bit cleared */
   {
 //   printf("PA3 %d\n", ((XFlag_Pin & XFlag_GPIO_Port->ODR) != 0));
    printf("readySet()\n");

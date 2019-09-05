@@ -25,10 +25,13 @@ void putx(char c);
 void putstr(const char *p);
 void sndhex(unsigned char *p, int size);
 char getx(void);
-char gethex(void);
+unsigned char gethex(void);
 char getstr(char *buf, int bufLen);
 unsigned char getnum(void);
 unsigned char getfloat(void);
+
+char query(const char *format, ...);
+char query(unsigned char (*get)(), const char *format, ...);
 
 void prtbuf(unsigned char *p, int size);
 void prtibuf(int16_t *p, int size);
