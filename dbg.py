@@ -32,6 +32,7 @@ dbgPins = (0, 1, 2, 3, 4, 5)
 
 trackSize = 64
 
+DBGTRK = 1
 dbgTrk = "2WL0"
 
 dbgTrkList = \
@@ -213,9 +214,9 @@ else:
     empty = ""
     eol = ""
 
-fWrite(f,"#define DBGTRK 1\n\n")
+fWrite(f,"#define DBGTRK %d\n\n" % (DBGTRK))
 
-fWrite(f,"#if DBGTRK\n\n")
+#fWrite(f,"#if DBGTRK\n\n")
 
 fWrite(f,"EXT boolean dbgTrk;\n")
 fWrite(f,"#define TRKBUFSIZE (4*%d)\n" % trackSize)
@@ -229,7 +230,10 @@ for (label, comment) in dbgTrkList:
 fWrite(f,"\n")
 
 for (label, arg, argType, macro) in dbgTrkCode:
-    defined = label == code
+    if dbgTrk != 0:
+        defined = label == code
+    else:
+        defined = False
     fWrite(f,"%s DBGTRK%s%s %d%s\n" % (d0, label, eq, defined, eol))
     fWrite(f,"%s dbgTrk%s(" % (d1, label))
     first = True
@@ -249,5 +253,5 @@ for (label, arg, argType, macro) in dbgTrkCode:
     else:
         fWrite(f,"%s\n\n" % (empty))
                 
-fWrite(f,"#endif /* DBGTRK */\n")
+#fWrite(f,"#endif /* DBGTRK */\n")
 f.close()

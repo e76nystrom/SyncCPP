@@ -19,7 +19,7 @@ extern "C" int16_t syncLoop(void);
 extern "C" void hard_fault_handler_c (unsigned int * hardfault_args);
 
 void runControl(void);
-int runState;
+unsigned int runState = ST_IDLE;
 uint32_t runTime;
 #define RUN_TIMEOUT 5000
 
@@ -151,6 +151,7 @@ int16_t syncLoop(void)
  ledSet();
  printf("readySet()\n");
  readySet();
+ runState = ST_IDLE;
  while (1)			/* main loop */
  {
   newline();
@@ -238,7 +239,6 @@ void runControl()
  switch(runState)
  {
  case ST_IDLE:			/* 0 idle */
-//  if (startEQ0())		/* if time to start */
   if (startIsClr())		/* if time to start */
   {
    printf("startClr()\n");
@@ -249,6 +249,15 @@ void runControl()
   break;
 
  case ST_WAIT_RPM:		/* 1 wait for rpm measruement */
+  if (startIsSet())		/* if start set */
+  {
+   printf("startSet()\n");
+   readySet();			/* make sure ready is set */
+   encoderStop();		/* stop encoder */
+   runState = ST_IDLE;		/* return to idle */
+   break;
+  }
+
   if (cmpTmr.measure == 0)	/* if measurement complete */
   {
    encoderCalculate();		/* calculate actual prescaler */
@@ -263,13 +272,13 @@ void runControl()
   else if ((millis() - runTime) > RUN_TIMEOUT)
   {
    cmpTmr.measure = 0;		/* clear measure flag */
+   readySet();			/* make sure ready is set */
    encoderStop();		/* stop encoder */
    runState = ST_IDLE;		/* return to idle state*/
   }
   break;
 
  case ST_WAIT_DONE:		/* 2 wait for start cleared */
-//  if (startNE0())		/* if start bit cleared */
   if (startIsSet())		/* if start bit cleared */
   {
 //   printf("PA3 %d\n", ((XFlag_Pin & XFlag_GPIO_Port->ODR) != 0));

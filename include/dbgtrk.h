@@ -1,7 +1,5 @@
 #define DBGTRK 1
 
-#if DBGTRK
-
 EXT boolean dbgTrk;
 #define TRKBUFSIZE (4*64)
 EXT int16_t trkidx;
@@ -33,4 +31,3 @@ inline void dbgTrk2WL(uint16_t val1  __attribute__((unused)),
  trkidx &= (TRKBUFSIZE - 1); \
 }
 
-#endif /* DBGTRK */
