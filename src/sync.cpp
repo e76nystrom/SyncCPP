@@ -197,7 +197,7 @@ typedef union
 #endif	// ->
 #ifdef __SYNC__
 
-extern uint32_t uwTick;
+extern __IO uint32_t uwTick;
 
 unsigned int millis(void)
 {

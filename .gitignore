@@ -34,8 +34,10 @@
 .gitattributes
 .settings/*
 Debug/*
-cscope*
+cscope.files
+cscope.out
 *~
 *#
 *.gpdsc
 /Debug/
+STM32CubeIDE/

@@ -88,8 +88,6 @@ void Error_Handler(void);
 #define ZFlag_GPIO_Port GPIOA
 #define XFlag_Pin GPIO_PIN_3
 #define XFlag_GPIO_Port GPIOA
-#define SPI_SEL_Pin GPIO_PIN_4
-#define SPI_SEL_GPIO_Port GPIOA
 #define Dbg5_Pin GPIO_PIN_0
 #define Dbg5_GPIO_Port GPIOB
 #define Dbg4_Pin GPIO_PIN_1

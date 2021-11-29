@@ -37,13 +37,13 @@
   ******************************************************************************
   */
 /* USER CODE END Header */
-
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include <stdio.h>
+#include <errno.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -62,6 +62,8 @@
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
+SPI_HandleTypeDef hspi1;
+
 TIM_HandleTypeDef htim2;
 TIM_HandleTypeDef htim3;
 TIM_HandleTypeDef htim4;
@@ -82,6 +84,7 @@ static void MX_TIM4_Init(void);
 static void MX_TIM3_Init(void);
 static void MX_USART3_UART_Init(void);
 static void MX_TIM2_Init(void);
+static void MX_SPI1_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -112,7 +115,6 @@ int main(void)
   /* USER CODE BEGIN 1 */
 
   /* USER CODE END 1 */
-  
 
   /* MCU Configuration--------------------------------------------------------*/
 
@@ -137,6 +139,7 @@ int main(void)
   MX_TIM3_Init();
   MX_USART3_UART_Init();
   MX_TIM2_Init();
+  MX_SPI1_Init();
   /* USER CODE BEGIN 2 */
 
   syncLoop();
@@ -165,7 +168,8 @@ void SystemClock_Config(void)
   RCC_OscInitTypeDef RCC_OscInitStruct = {0};
   RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
 
-  /** Initializes the CPU, AHB and APB busses clocks 
+  /** Initializes the RCC Oscillators according to the specified parameters
+  * in the RCC_OscInitTypeDef structure.
   */
   RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
   RCC_OscInitStruct.HSEState = RCC_HSE_ON;
@@ -178,7 +182,7 @@ void SystemClock_Config(void)
   {
     Error_Handler();
   }
-  /** Initializes the CPU, AHB and APB busses clocks 
+  /** Initializes the CPU, AHB and APB buses clocks
   */
   RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
                               |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
@@ -191,6 +195,44 @@ void SystemClock_Config(void)
   {
     Error_Handler();
   }
+}
+
+/**
+  * @brief SPI1 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_SPI1_Init(void)
+{
+
+  /* USER CODE BEGIN SPI1_Init 0 */
+
+  /* USER CODE END SPI1_Init 0 */
+
+  /* USER CODE BEGIN SPI1_Init 1 */
+
+  /* USER CODE END SPI1_Init 1 */
+  /* SPI1 parameter configuration*/
+  hspi1.Instance = SPI1;
+  hspi1.Init.Mode = SPI_MODE_SLAVE;
+  hspi1.Init.Direction = SPI_DIRECTION_2LINES;
+  hspi1.Init.DataSize = SPI_DATASIZE_8BIT;
+  hspi1.Init.CLKPolarity = SPI_POLARITY_LOW;
+  hspi1.Init.CLKPhase = SPI_PHASE_1EDGE;
+  hspi1.Init.NSS = SPI_NSS_SOFT;
+  hspi1.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_4;
+  hspi1.Init.FirstBit = SPI_FIRSTBIT_MSB;
+  hspi1.Init.TIMode = SPI_TIMODE_DISABLE;
+  hspi1.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
+  hspi1.Init.CRCPolynomial = 10;
+  if (HAL_SPI_Init(&hspi1) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN SPI1_Init 2 */
+
+  /* USER CODE END SPI1_Init 2 */
+
 }
 
 /**
@@ -214,7 +256,7 @@ static void MX_TIM2_Init(void)
   htim2.Instance = TIM2;
   htim2.Init.Prescaler = 0;
   htim2.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim2.Init.Period = 0;
+  htim2.Init.Period = 65535;
   htim2.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim2.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
   if (HAL_TIM_Base_Init(&htim2) != HAL_OK)
@@ -259,7 +301,7 @@ static void MX_TIM3_Init(void)
   htim3.Instance = TIM3;
   htim3.Init.Prescaler = 0;
   htim3.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim3.Init.Period = 0;
+  htim3.Init.Period = 65535;
   htim3.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim3.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
   if (HAL_TIM_Base_Init(&htim3) != HAL_OK)
@@ -305,7 +347,7 @@ static void MX_TIM4_Init(void)
   htim4.Instance = TIM4;
   htim4.Init.Prescaler = 0;
   htim4.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim4.Init.Period = 0;
+  htim4.Init.Period = 65535;
   htim4.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim4.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
   if (HAL_TIM_Base_Init(&htim4) != HAL_OK)
@@ -426,10 +468,10 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_WritePin(Led_GPIO_Port, Led_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOA, XFlag_Pin|SPI_SEL_Pin|Dbg1_Pin|Dbg0_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOA, XFlag_Pin|Dbg1_Pin|Dbg0_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOB, Dbg5_Pin|Dbg4_Pin|Dbg3_Pin|Dbg2_Pin 
+  HAL_GPIO_WritePin(GPIOB, Dbg5_Pin|Dbg4_Pin|Dbg3_Pin|Dbg2_Pin
                           |SyncOut_Pin|IndexTest_Pin|Encoder_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin : Led_Pin */
@@ -451,22 +493,16 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_PULLUP;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : XFlag_Pin SPI_SEL_Pin Dbg1_Pin Dbg0_Pin */
-  GPIO_InitStruct.Pin = XFlag_Pin|SPI_SEL_Pin|Dbg1_Pin|Dbg0_Pin;
+  /*Configure GPIO pins : XFlag_Pin Dbg1_Pin Dbg0_Pin */
+  GPIO_InitStruct.Pin = XFlag_Pin|Dbg1_Pin|Dbg0_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : PA5 PA6 PA7 */
-  GPIO_InitStruct.Pin = GPIO_PIN_5|GPIO_PIN_6|GPIO_PIN_7;
-  GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
-  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
-
-  /*Configure GPIO pins : Dbg5_Pin Dbg4_Pin Dbg3_Pin Dbg2_Pin 
+  /*Configure GPIO pins : Dbg5_Pin Dbg4_Pin Dbg3_Pin Dbg2_Pin
                            SyncOut_Pin IndexTest_Pin Encoder_Pin */
-  GPIO_InitStruct.Pin = Dbg5_Pin|Dbg4_Pin|Dbg3_Pin|Dbg2_Pin 
+  GPIO_InitStruct.Pin = Dbg5_Pin|Dbg4_Pin|Dbg3_Pin|Dbg2_Pin
                           |SyncOut_Pin|IndexTest_Pin|Encoder_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
@@ -544,6 +580,29 @@ void _read(void)
 {
 }
 
+int _getpid(void);
+int _kill(int pid, int sig);
+void _exit (int status);
+//#define EINVAL -1
+//extern int errno;
+
+int _getpid(void)
+{
+	return 1;
+}
+
+int _kill(__attribute__((unused)) int pid, __attribute__((unused)) int sig)
+{
+	errno = EINVAL;
+	return -1;
+}
+
+void _exit (int status)
+{
+	_kill(status, -1);
+	while (1) {}		/* Make sure we hang here */
+}
+
 /* USER CODE END 4 */
 
 /**
@@ -569,7 +628,7 @@ void Error_Handler(void)
   * @retval None
   */
 void assert_failed(uint8_t *file, uint32_t line)
-{ 
+{
   /* USER CODE BEGIN 6 */
  printf("assert_failed %s line %ld\n", file, line);
   /* User can add his own implementation to report the file name and line number,
