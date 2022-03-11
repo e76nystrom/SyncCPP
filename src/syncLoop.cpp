@@ -110,16 +110,20 @@ int16_t syncLoop(void)
  while (--i >= 0)		/* while not at end of list */
   HAL_NVIC_DisableIRQ((IRQn_Type) *p++);	/* disable external interrupt */
 
+#if defined(REMPORT)
 #if REM_ISR
  initRem();
 #else
  HAL_NVIC_DisableIRQ(REMOTE_IRQn);
-#endif
+#endif	/* REM_ISR */
+#endif	/* REMPORT */
 
  initCharBuf();
 
  putstr("start sync loop\n");
+#if defined(REMPORT)
  putstr1("start remcmd\n");
+#endif	 /* REMPORT */
 
  syncLoopSetup();
  
@@ -198,6 +202,7 @@ int16_t syncLoop(void)
     break;
    }
 
+#if defined(REMPORT)
 #if REM_ISR == 0
    if (chRdy1())		/* if character on remote link */
    {
@@ -218,19 +223,22 @@ int16_t syncLoop(void)
      {
       setupDone = 1;		/* force setup done */
      }
-#endif
+#endif	/* 0 */
     }
    }
-#endif
+#endif	/* REM_ISR */
+#endif	/* REMPORT */
   }
 
   flushBuf();
   lclcmd(ch);			/* local commands */
   flushBuf();
+#if defined(REMPORT)
 #if REM_ISR == 0
   if (remcmdTimeout < UINT_MAX)
    remcmdUpdateTime = millis();
-#endif
+#endif	/* REM_ISR */
+#endif	/* REM_PORT */
  }
 }
 

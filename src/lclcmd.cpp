@@ -359,8 +359,10 @@ void lclcmd(int ch)
    i2cInfo(I2C1, "I2C1");
   if (val & 0x40000)
    usartInfo(DBGPORT, "DBG");
+#if defined(REMPORT)
   if (val & 0x80000)
    usartInfo(REMPORT, "REM");
+#endif  /* REMPORT */
  }
 #endif
  

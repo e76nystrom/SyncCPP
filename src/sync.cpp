@@ -1,5 +1,4 @@
 /******************************************************************************/
-#if !defined(INCLUDE)
 #define __SYNC__
 #include "stm32f1xx_hal.h"
 
@@ -20,7 +19,6 @@
 
 #define EXT
 #include "sync.h"
-#endif /* INCLUDE */
 
 #if defined(__SYNC_INC__)	// <-
 
@@ -194,7 +192,7 @@ typedef union
  };
 } BITWORD;
 
-#endif	// ->
+#endif	/* __SYNC_INC__ */ // ->
 #ifdef __SYNC__
 
 extern __IO uint32_t uwTick;

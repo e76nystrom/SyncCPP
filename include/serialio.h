@@ -36,6 +36,8 @@ char query(unsigned char (*get)(), const char *format, ...);
 void prtbuf(unsigned char *p, int size);
 void prtibuf(int16_t *p, int size);
 
+#if defined(REMPORT)
+
 /* polled remote port routines */
 
 void putx1(char c);
@@ -56,6 +58,8 @@ int getRem(void);
 char gethexRem(void);
 char getstrRem(char *buf, int bufLen);
 unsigned char getnumRem(void);
+
+#endif	/* REMPORT */
 
 /* debug message routines */
 
@@ -112,8 +116,10 @@ EXT char eolFlag;
 
 /* remote port macros */
 
+#if defined(REMPORT)
 #define chRdy1() (REMPORT->SR & USART_SR_RXNE)
 #define chRead1() REMPORT->DR
+#endif	/* REMPORT  */
 
 #if DBGMSG
 
@@ -183,4 +189,4 @@ EXT int isrCount;
 EXT unsigned int isrOverflow;
 EXT char isrBuf[ISR_BUF_SIZE];
 
-#endif	// ->
+#endif	/* __SERIALIO_INC__ */ // ->

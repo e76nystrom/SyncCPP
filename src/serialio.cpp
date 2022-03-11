@@ -61,6 +61,8 @@ char query(unsigned char (*get)(), const char *format, ...);
 void prtbuf(unsigned char *p, int size);
 void prtibuf(int16_t *p, int size);
 
+#if defined(REMPORT)
+
 /* polled remote port routines */
 
 void putx1(char c);
@@ -81,6 +83,8 @@ int getRem(void);
 char gethexRem(void);
 char getstrRem(char *buf, int bufLen);
 unsigned char getnumRem(void);
+
+#endif	/* REMPORT */
 
 /* debug message routines */
 
@@ -137,8 +141,10 @@ EXT char eolFlag;
 
 /* remote port macros */
 
+#if defined(REMPORT)
 #define chRdy1() (REMPORT->SR & USART_SR_RXNE)
 #define chRead1() REMPORT->DR
+#endif	/* REMPORT  */
 
 #if DBGMSG
 
@@ -208,7 +214,7 @@ EXT int isrCount;
 EXT unsigned int isrOverflow;
 EXT char isrBuf[ISR_BUF_SIZE];
 
-#endif	// ->
+#endif	/* __SERIALIO_INC__ */ // ->
 #ifdef __SERIALIO__
 
 /* polled debug port routines */
@@ -564,6 +570,7 @@ void prtibuf(int16_t *p, int size)
  }
 }
 
+#if defined(REMPORT)
 /* polled remote port routines */
 
 void putx1(char c)
@@ -782,7 +789,7 @@ extern "C" void remoteISR(void)
     {
      u->state = 0;		/* set to waiting for start */
      NVIC_ClearPendingIRQ(REMOTE_IRQn); /* clear pending interrupt */
-     remcmd();			/* process remote command */
+     remcmd(&remAction);	/* process remote command */
     }
    }
   }
@@ -1012,6 +1019,8 @@ unsigned char getnumRem(void)
  return(NO_VAL);
 }
 
+#endif	/* REMPORT */
+
 void initCharBuf(void)
 {
  dbgBuffer = 1;
@@ -1027,8 +1036,6 @@ void initCharBuf(void)
  isrCount = 0;
  isrOverflow = 0;
 }
-
-void delayUSec(unsigned short delay);
 
 void putBufStr(const char *s)
 {

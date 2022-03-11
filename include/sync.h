@@ -170,4 +170,4 @@ typedef union
  };
 } BITWORD;
 
-#endif	// ->
+#endif	/* __SYNC_INC__ */ // ->

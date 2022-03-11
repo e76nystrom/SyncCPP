@@ -1,4 +1,3 @@
-#if !defined(INCLUDE)
 #define __REMCMD__
 #include "stm32f1xx_hal.h"
 
@@ -6,8 +5,12 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+#include "syncStruct.h"
+
+#include "config.h"
 #include "remvar.h"
 #include "serialio.h"
+#include "spix.h"
 #include "sync.h"
 
 #ifdef EXT
@@ -16,7 +19,6 @@
 
 #define EXT
 #include "remcmd.h"
-#endif
 
 #if defined(__REMCMD_INC__)	// <-
 
@@ -24,8 +26,9 @@
 #define EXT extern
 #endif
 
-#define REM_ISR 1		/* remote port using isr */
+#define DBG_LOAD 1
 
+#if defined(REMPORT)
 #if REM_ISR
 #define putrem putRem
 #define putstrrem putstrRem
@@ -42,74 +45,55 @@
 #define gethexrem gethex1
 #define getnumrem getnum1
 #define getstrrem getstr1
-#endif
-
-#define DBG_LOAD 1
-
-void remcmd(void);
+#endif	/* REM_ISR */
+#endif	/* REMPORT */
 
 EXT int16_t tmpval;
 
-#include "cmdList.h"
-#include "parmList.h"
+typedef struct sRemAction
+{
+ int (*getCh)(void);
+ void (*putCh)(char ch);
+} T_REM_ACTION, *P_REM_ACTION;
 
-#endif	// ->
+#if defined(REMPORT)
+extern T_REM_ACTION remAction;
+#endif	/* REMPORT */
+
+extern T_REM_ACTION spiAction;
+
+void remcmd(P_REM_ACTION);
+
+void loadVal(P_REM_ACTION act);
+
+char getNum(P_REM_ACTION act);
+char getHex(P_REM_ACTION act);
+void sndHex(void (*putCh)(char ch), unsigned char *p, int size);
+
+#include "syncCmdList.h"
+#include "syncParmList.h"
+
+#endif	/* __REMCMD_INC__*/ // ->
 #ifdef __REMCMD__
 
-#include "remparm.h"
-void loadVal(void);
+#if defined(REMPORT)
+T_REM_ACTION remAction = {&getRem, &putRem};
+#endif	/* REMPORT */
 
-void loadVal(void)
+T_REM_ACTION spiAction = {&getSPI, &putSPI};
+
+#include "syncParm.h"
+
+void remcmd(P_REM_ACTION act)
 {
- gethexrem();			/* read the parameter number */
- int parm = valRem;		/* save it */
-
- if (parm < SYNC_MAX_PARM)	/* if in range */
- {
-  P_PARM valptr = &remparm[parm]; /* pointer to parameter info */
-  p = (unsigned char *) valptr->p;		/* destination pointer */
-  int size = valptr->size;	/* value size */
-
-  int type = getnumrem();	/* get the value */
-  if (type == 1)		/* if integer */
-  {
-#if DBG_LOAD
-   printf("w %2x %d (%08x) =  %8x\n",
-	  parm, size, (unsigned) p, (unsigned) valRem);
-#endif
-   if (size == 4)		/* if a long word */
-   {
-    *(int32_t *) p = valRem;	/* save as a long word */
-   }
-   else if (size == 1)		/* if a character */
-   {
-    *p = valRem;		/* save the character */
-   }
-   else if (size == 2)		/* if a short integer */
-   {
-    *(int16_t *) p = valRem;	/* save the value */
-   }
-  }
-  else if (type == 2)		/* if floating value */
-  {
-#if DBG_LOAD
-   printf("w %2x f (%08x) =  %8.4f\n", parm, (unsigned) p, fValRem);
-#endif
-   *(float *) p = fValRem;	/* save as a float */
-  }
- }
-}
-
-void remcmd(void)
-{
- P_PARM valptr;
+ //P_PARM valptr;
  int parm;
 
  remcmdUpdateTime = millis();
  remcmdTimeout = REMCMD_TIMEOUT;
 
- putrem('-');
- gethexrem();			/* read parameter */
+ act->putCh('-');
+ getHex(act);		/* read parameter */
  parm = valRem;
  switch (parm)
  {
@@ -126,48 +110,39 @@ void remcmd(void)
   break;
   
  case SYNC_LOADVAL:		/* load a local parameter */
-  loadVal();
+  loadVal(act);
   break;
 
  case SYNC_LOADMULTI:		/* load multiple parameters */
  {
-  gethexrem();
+  getHex(act);
   int count = valRem;
   while (--count >= 0)
-   loadVal();
+   loadVal(act);
  }
-  break;
+ break;
 
  case SYNC_READVAL:		/* read a local parameter */
-  gethexrem();			/* save the parameter number */
+ {
+  T_DATA_UNION parmVal;
+  getHex(act);			/* save the parameter number */
   parm = valRem;		/* save it */
-  valptr = &remparm[parm];	/* pointer to parameters */
-  if (DBG_LOAD)
+  if (parm < SYNC_MAX_PARM)	/* if in range */
   {
-   unsigned char *p = (unsigned char *) valptr->p;
-   char size;
-   unsigned int tmp = 0;
-   size = valptr->size;
-   if (size == 4)
-   {
-    tmp = *(int32_t *) p;
-   }
-   else if (size == 1)
-   {
-    tmp = *p;
-   }
-   else if (size == 2)
-   {
-    tmp = *(int16_t *) p;
-   }
-   printf("r %2x %d (%08x) =  %8x\n", 
-	  (unsigned int) parm, size, (unsigned int) p, tmp);
+   parmVal.t_int = 0;
+   getSyncVar(parm, &parmVal);
+   int size = syncParm[parm];
+#if DBG_LOAD
+   printf("r p %2x s %d v %8x\n",
+	  (unsigned int) parm, size, parmVal.t_unsigned_int);
+#endif
+   sndHex(act->putCh, (unsigned char *) &parmVal.t_char, size);
   }
-  sndhexrem((unsigned char *) valptr->p, valptr->size); /* send the response */
+ }
   break;
  }
 
-#if REM_ISR
+#if 0
  while (1)
  {
   int tmp = getRem();
@@ -183,7 +158,190 @@ void remcmd(void)
  }
 #endif
 
- putrem('*');
+ act->putCh('*');
+ }
+
+void loadVal(P_REM_ACTION act)
+{
+ getHex(act);			/* read the parameter number */
+ int parm = valRem;		/* save it */
+ if (parm < SYNC_MAX_PARM)	/* if in range */
+ {
+  T_DATA_UNION parmVal;
+  int type = getNum(act);	/* get the value */
+  if (type == INT_VAL)		/* if integer */
+  {
+#if DBG_LOAD
+   int size = syncParm[parm]; /* value size */
+   printf("w parm %2x s %d val %8x\n", parm, size, (unsigned) valRem);
+#endif
+   parmVal.t_int = valRem;
+  }
+  else if (type == FLOAT_VAL)	/* if floating value */
+  {
+   parmVal.t_float = fValRem;
+#if DBG_LOAD
+   printf("w parm %2x     val %8.4f\n", parm, fValRem);
+#endif
+  }
+  setSyncVar(parm, parmVal);
+ }
+}
+
+char getNum(P_REM_ACTION act)
+{
+ char ch;			/* input character */
+ char chbuf[MAXDIG];		/* input digit buffer */
+ unsigned char chidx;		/* input character index */
+ unsigned char count;			/* input character count */
+ char neg;			/* negative flag */
+ char hex;			/* hex flag */
+
+ neg = 0;
+ hex = 0;
+ valRem = 0;
+ chidx = 0;
+ count = 0;
+ while (1)
+ {
+  ch = act->getCh();
+  if ((ch >= '0')
+  &&  (ch <= '9'))
+  {
+   if (chidx < MAXDIG)
+   {
+    act->putCh(ch);
+    chbuf[chidx] = ch - '0';
+    chidx++;
+   }
+  }
+  else if ((ch >= 'a')
+  &&       (ch <= 'f'))
+  {
+   if (chidx < MAXDIG)
+   {
+    hex = 1;
+    act->putCh(ch);
+    chbuf[chidx] = ch - 'a' + 10;
+    chidx++;
+   }
+  }
+  else if ((ch == '\r')
+       ||  (ch == ' '))
+  {
+   if (ch == ' ')
+    act->putCh(ch);
+
+   if (hex)
+   {
+    while (count < chidx)
+    {
+     valRem = (valRem << 4) + chbuf[count];
+     count++;
+    }
+   }
+   else
+   {
+    while (count < chidx)
+    {
+     valRem = valRem * 10 + chbuf[count];
+     count++;
+    }
+   }
+   if (neg)
+    valRem = -valRem;
+   return((char) count);
+  }
+  else if (chidx == 0)
+  {
+   if (ch == '-')
+   {
+    act->putCh(ch);
+    neg = 1;
+   }
+   else if (ch == 'x')
+   {
+    act->putCh(ch);
+    hex = 1;
+   }
+  }
+  else
+   printf("%d ", ch);
+ }
+}
+
+char getHex(P_REM_ACTION act)
+{
+ char ch;
+ int count;
+
+ valRem = 0;
+ count = 0;
+ while (count <= 8)
+ {
+  int tmp = act->getCh();
+  if (tmp > 0)
+  {
+   ch = (char) tmp;
+   if ((ch >= '0')
+   &&  (ch <= '9'))
+   {
+    act->putCh(ch);
+    ch -= '0';
+    count++;
+   }
+   else if ((ch >= 'a')
+   &&       (ch <= 'f'))
+   {
+    act->putCh(ch);
+    ch -= 'a' - 10;
+    count++;
+   }
+   else if (ch == ' ')
+   {
+    act->putCh(ch);
+    break;
+   }
+   else if (ch == '\r')
+    break;
+   else
+    continue;
+   valRem <<= 4;
+   valRem += ch;
+  }
+  else
+   return(0);
+ }
+ return(count != 0);
+}
+
+void sndHex(void (*putCh)(char ch), unsigned char *p, int size)
+{
+ char tmp;
+ char ch;
+
+ p += size;
+ while (size != 0)
+ {
+  --size;
+  p--;
+  tmp = *p;
+  ch = tmp;
+  ch >>= 4;
+  ch &= 0xf;
+  if (ch < 10)
+   ch += '0';
+  else
+   ch += 'a' - 10;
+  putCh(ch);
+
+  tmp &= 0xf;
+  if (tmp < 10)
+   tmp += '0';
+  else
+   tmp += 'a' - 10;
+  putCh(tmp);
+ }
 }
 
 #endif

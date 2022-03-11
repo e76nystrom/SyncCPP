@@ -4,8 +4,9 @@
 #define EXT extern
 #endif
 
-#define REM_ISR 1		/* remote port using isr */
+#define DBG_LOAD 1
 
+#if defined(REMPORT)
 #if REM_ISR
 #define putrem putRem
 #define putstrrem putstrRem
@@ -22,15 +23,32 @@
 #define gethexrem gethex1
 #define getnumrem getnum1
 #define getstrrem getstr1
-#endif
-
-#define DBG_LOAD 1
-
-void remcmd(void);
+#endif	/* REM_ISR */
+#endif	/* REMPORT */
 
 EXT int16_t tmpval;
 
-#include "cmdList.h"
-#include "parmList.h"
+typedef struct sRemAction
+{
+ int (*getCh)(void);
+ void (*putCh)(char ch);
+} T_REM_ACTION, *P_REM_ACTION;
 
-#endif	// ->
+#if defined(REMPORT)
+extern T_REM_ACTION remAction;
+#endif	/* REMPORT */
+
+extern T_REM_ACTION spiAction;
+
+void remcmd(P_REM_ACTION);
+
+void loadVal(P_REM_ACTION act);
+
+char getNum(P_REM_ACTION act);
+char getHex(P_REM_ACTION act);
+void sndHex(void (*putCh)(char ch), unsigned char *p, int size);
+
+#include "syncCmdList.h"
+#include "syncParmList.h"
+
+#endif	/* __REMCMD_INC__*/ // ->
