@@ -148,6 +148,7 @@ void i2cInfo(I2C_TypeDef *i2c, const char *str);
 
 char portName(GPIO_TypeDef *port);
 char timNum(TIM_TypeDef *tmr);
+void spiInfo(SPI_TypeDef *spi);
 
 typedef union
 {
@@ -751,6 +752,14 @@ void i2cInfo(I2C_TypeDef *i2c, const char *str)
  printf("CCR   %8x\n",(unsigned int) i2c->CCR);
  printf("TRISE %8x\n",(unsigned int) i2c->TRISE);
  flushBuf();
+}
+
+void spiInfo(SPI_TypeDef *spi)
+{
+ printf("spi %x\n", (unsigned int) spi);
+ printf("CR1      %8x ",  (unsigned int) spi->CR1);
+ printf("CR2      %8x\n", (unsigned int) spi->CR2);
+ printf("SR       %8x\n", (unsigned int) spi->SR);
 }
 
 #endif

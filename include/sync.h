@@ -126,6 +126,7 @@ void i2cInfo(I2C_TypeDef *i2c, const char *str);
 
 char portName(GPIO_TypeDef *port);
 char timNum(TIM_TypeDef *tmr);
+void spiInfo(SPI_TypeDef *spi);
 
 typedef union
 {

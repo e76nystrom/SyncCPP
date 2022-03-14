@@ -26,6 +26,7 @@ dbgList = \
  ("dbgCycEnd",  3, "end of internal pulse cycle"),
  ("dbgCapIsr",  4, "length of capture isr"),
  ("dbgIntIsr",  5, "length of internal isr"),
+ ("dbgSpiIsr",  "", "spi isr"),
 )
 
 dbgPins = (0, 1, 2, 3, 4, 5)
@@ -134,6 +135,8 @@ for pin in dbgPins:
     fWrite(f,"#endif\n\n")
 
 for (name, pin, comment) in dbgList:
+    if len(str(pin)) == 0:
+        continue
     pin = int(pin)
     fWrite(f,"/* %s */\n" % (comment))
     if pin >= 0:

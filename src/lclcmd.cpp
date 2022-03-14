@@ -363,6 +363,8 @@ void lclcmd(int ch)
   if (val & 0x80000)
    usartInfo(REMPORT, "REM");
 #endif  /* REMPORT */
+  if (val & 0x100000)
+   spiInfo(SPIn);
  }
 #endif
  

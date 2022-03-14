@@ -92,9 +92,11 @@ void remcmd(P_REM_ACTION act)
  remcmdUpdateTime = millis();
  remcmdTimeout = REMCMD_TIMEOUT;
 
+ parm = act->getCh();
  act->putCh('-');
  getHex(act);		/* read parameter */
  parm = valRem;
+ putBufChar(parm + '0');
  switch (parm)
  {
  case SYNC_SETUP:
@@ -117,6 +119,7 @@ void remcmd(P_REM_ACTION act)
  {
   getHex(act);
   int count = valRem;
+  // printf("loadmulti count %d\n", count);
   while (--count >= 0)
    loadVal(act);
  }
@@ -140,6 +143,18 @@ void remcmd(P_REM_ACTION act)
   }
  }
   break;
+
+ case SYNC_POLL:
+  act->putCh(' ');
+  sndHex(act->putCh, (unsigned char *) &cmpTmr.encCount,
+	 sizeof(cmpTmr.encCount));
+  act->putCh(' ');
+  sndHex(act->putCh, (unsigned char *) &cmpTmr.intCount,
+	 sizeof(cmpTmr.intCount));
+  break;
+
+ default:
+  break;
  }
 
 #if 0
@@ -158,8 +173,14 @@ void remcmd(P_REM_ACTION act)
  }
 #endif
 
- act->putCh('*');
+ while(1)
+ {
+  parm = act->getCh();
+  if (parm < 0)
+   break;
  }
+ act->putCh('*');
+}
 
 void loadVal(P_REM_ACTION act)
 {
@@ -168,105 +189,13 @@ void loadVal(P_REM_ACTION act)
  if (parm < SYNC_MAX_PARM)	/* if in range */
  {
   T_DATA_UNION parmVal;
-  int type = getNum(act);	/* get the value */
-  if (type == INT_VAL)		/* if integer */
-  {
-#if DBG_LOAD
-   int size = syncParm[parm]; /* value size */
-   printf("w parm %2x s %d val %8x\n", parm, size, (unsigned) valRem);
+  getHex(act);	/* get the value */
+#if 0 && DBG_LOAD
+  int size = syncParm[parm]; /* value size */
+  printf("w parm %2x s %d val %8x\n", parm, size, (unsigned) valRem);
 #endif
-   parmVal.t_int = valRem;
-  }
-  else if (type == FLOAT_VAL)	/* if floating value */
-  {
-   parmVal.t_float = fValRem;
-#if DBG_LOAD
-   printf("w parm %2x     val %8.4f\n", parm, fValRem);
-#endif
-  }
+  parmVal.t_int = valRem;
   setSyncVar(parm, parmVal);
- }
-}
-
-char getNum(P_REM_ACTION act)
-{
- char ch;			/* input character */
- char chbuf[MAXDIG];		/* input digit buffer */
- unsigned char chidx;		/* input character index */
- unsigned char count;			/* input character count */
- char neg;			/* negative flag */
- char hex;			/* hex flag */
-
- neg = 0;
- hex = 0;
- valRem = 0;
- chidx = 0;
- count = 0;
- while (1)
- {
-  ch = act->getCh();
-  if ((ch >= '0')
-  &&  (ch <= '9'))
-  {
-   if (chidx < MAXDIG)
-   {
-    act->putCh(ch);
-    chbuf[chidx] = ch - '0';
-    chidx++;
-   }
-  }
-  else if ((ch >= 'a')
-  &&       (ch <= 'f'))
-  {
-   if (chidx < MAXDIG)
-   {
-    hex = 1;
-    act->putCh(ch);
-    chbuf[chidx] = ch - 'a' + 10;
-    chidx++;
-   }
-  }
-  else if ((ch == '\r')
-       ||  (ch == ' '))
-  {
-   if (ch == ' ')
-    act->putCh(ch);
-
-   if (hex)
-   {
-    while (count < chidx)
-    {
-     valRem = (valRem << 4) + chbuf[count];
-     count++;
-    }
-   }
-   else
-   {
-    while (count < chidx)
-    {
-     valRem = valRem * 10 + chbuf[count];
-     count++;
-    }
-   }
-   if (neg)
-    valRem = -valRem;
-   return((char) count);
-  }
-  else if (chidx == 0)
-  {
-   if (ch == '-')
-   {
-    act->putCh(ch);
-    neg = 1;
-   }
-   else if (ch == 'x')
-   {
-    act->putCh(ch);
-    hex = 1;
-   }
-  }
-  else
-   printf("%d ", ch);
  }
 }
 
@@ -288,14 +217,12 @@ char getHex(P_REM_ACTION act)
    {
     act->putCh(ch);
     ch -= '0';
-    count++;
    }
    else if ((ch >= 'a')
    &&       (ch <= 'f'))
    {
     act->putCh(ch);
     ch -= 'a' - 10;
-    count++;
    }
    else if (ch == ' ')
    {
@@ -306,6 +233,8 @@ char getHex(P_REM_ACTION act)
     break;
    else
     continue;
+
+   count++;
    valRem <<= 4;
    valRem += ch;
   }
@@ -319,6 +248,7 @@ void sndHex(void (*putCh)(char ch), unsigned char *p, int size)
 {
  char tmp;
  char ch;
+ int zeros = 0;
 
  p += size;
  while (size != 0)
@@ -329,19 +259,31 @@ void sndHex(void (*putCh)(char ch), unsigned char *p, int size)
   ch = tmp;
   ch >>= 4;
   ch &= 0xf;
-  if (ch < 10)
-   ch += '0';
-  else
-   ch += 'a' - 10;
-  putCh(ch);
+  if ((ch != 0)
+  ||  zeros)
+  {
+   zeros = 1;
+   if (ch < 10)
+    ch += '0';
+   else
+    ch += 'a' - 10;
+   putCh(ch);
+  }
 
   tmp &= 0xf;
-  if (tmp < 10)
-   tmp += '0';
-  else
-   tmp += 'a' - 10;
-  putCh(tmp);
+  if ((tmp != 0)
+  ||  zeros)
+  {
+   zeros = 1;
+   if (tmp < 10)
+    tmp += '0';
+   else
+    tmp += 'a' - 10;
+   putCh(tmp);
+  }
  }
+ if (zeros == 0)
+  putCh('0');
 }
 
 #endif
