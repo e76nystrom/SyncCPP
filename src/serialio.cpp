@@ -13,7 +13,7 @@
 #include "dbg.h"
 
 #include "remcmd.h"
-#include "remvar.h"
+//#include "remvar.h"
 
 #ifdef EXT
 #undef EXT

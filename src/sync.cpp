@@ -10,7 +10,8 @@
 #include <limits.h>
 #include <stdarg.h>
 
-#include "remvar.h"
+//#include "remvar.h"
+#include "syncStruct.h"
 #include "serialio.h"
 
 #ifdef EXT
@@ -205,9 +206,9 @@ unsigned int millis(void)
 
 void encoderSetup(void)
 {
- cmpTmr.encCycLen = syncCycle;
- cmpTmr.encCycLen = syncOutput;
- cmpTmr.preScale = syncPrescaler;
+ cmpTmr.encCycLen = sVar.syncCycle;
+ cmpTmr.encCycLen = sVar.syncOutput;
+ cmpTmr.preScale = sVar.syncPrescaler;
 }
 
 void encoderMeasure(void)
@@ -241,25 +242,25 @@ void encoderCalculate(void)
 {
  printf("encoderCalculate\n");
  uint64_t n = clocksMin * cmpTmr.encCycLen;
- uint64_t d = ((uint64_t) cmpTmr.cycleClocks * syncEncoder);
+ uint64_t d = ((uint64_t) cmpTmr.cycleClocks * sVar.syncEncoder);
  uint16_t rpm = (uint16_t) (n / d);
 
- uint32_t pulseMinIn = syncEncoder * rpm;
- uint32_t pulseMinOut = (pulseMinIn * syncOutput) / syncCycle;
+ uint32_t pulseMinIn = sVar.syncEncoder * rpm;
+ uint32_t pulseMinOut = (pulseMinIn * sVar.syncOutput) / sVar.syncCycle;
  uint32_t clocksPulse = (uint32_t) (clocksMin / pulseMinOut);
- syncPrescaler = clocksPulse >> 16;
+ sVar.syncPrescaler = clocksPulse >> 16;
  printf("n %lld d %lld rpm %d preScaler %d\n",
-	n, d, rpm, syncPrescaler);
- syncPrescaler += 1;
+	n, d, rpm, sVar.syncPrescaler);
+ sVar.syncPrescaler += 1;
 }
 
 void encoderStart(void)
 {
  encoderStop();			/* stop encoder */
 
- cmpTmr.encCycLen = syncCycle;
- cmpTmr.intCycLen = syncOutput;
- cmpTmr.preScale = syncPrescaler;
+ cmpTmr.encCycLen = sVar.syncCycle;
+ cmpTmr.intCycLen = sVar.syncOutput;
+ cmpTmr.preScale = sVar.syncPrescaler;
 
  printf("encoderStart cycle %d output %d preScale %u\n",
 	cmpTmr.encCycLen, cmpTmr.intCycLen, cmpTmr.preScale);

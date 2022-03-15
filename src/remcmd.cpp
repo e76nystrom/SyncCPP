@@ -8,7 +8,8 @@
 #include "syncStruct.h"
 
 #include "config.h"
-#include "remvar.h"
+//#include "remvar.h"
+#include "syncStruct.h"
 #include "serialio.h"
 #include "spix.h"
 #include "sync.h"
@@ -190,7 +191,7 @@ void loadVal(P_REM_ACTION act)
  {
   T_DATA_UNION parmVal;
   getHex(act);	/* get the value */
-#if 0 && DBG_LOAD
+#if DBG_LOAD
   int size = syncParm[parm]; /* value size */
   printf("w parm %2x s %d val %8x\n", parm, size, (unsigned) valRem);
 #endif

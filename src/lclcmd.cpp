@@ -10,7 +10,8 @@
 
 #define EXT extern
 #include "sync.h"
-#include "remvar.h"
+//#include "remvar.h"
+#include "syncStruct.h"
 #include "serialio.h"
 
 #ifdef EXT
@@ -132,7 +133,8 @@ void lclcmd(int ch)
 // (clocksPerSec*60*ratioDenom)/(clocksCycle*encoderPulse)
   uint32_t tmrClkFreq = HAL_RCC_GetPCLK2Freq();
   uint64_t n = (uint64_t) tmrClkFreq * 60 * cmpTmr.encCycLen;
-  uint64_t d = ((uint64_t) cmpTmr.cycleClocks * cmpTmr.preScale * syncEncoder);
+  uint64_t d = ((uint64_t) cmpTmr.cycleClocks * cmpTmr.preScale *
+		sVar.syncEncoder);
   printf("n %lld d %lld\n", n, d);
   uint16_t rpm = (uint16_t) (n / d);
   printf("%d rpm\n", rpm);
@@ -161,7 +163,7 @@ void lclcmd(int ch)
   {
    encLines = val;
    encPulse = encLines * 4;
-   syncEncoder = encPulse;
+   sVar.syncEncoder = encPulse;
   }
  }
  else if (ch == 'R')

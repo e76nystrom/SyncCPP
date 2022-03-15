@@ -158,19 +158,14 @@ int16_t syncLoop(void)
  readySet();
  runState = ST_IDLE;
 
- printf("spi enabled\n");
  SPIn->CR1 |= SPI_CR1_SPE;
  SPIn->CR2 |= SPI_CR2_TXEIE | SPI_CR2_RXNEIE;
- spiInfo(SPIn);
  
  while (1)			/* main loop */
  {
   newline();
   while (1)			/* input background loop */
   {
-   // uint8_t buf[80];
-   // HAL_SPI_Receive(&hspi1, buf, sizeof(buf), 3000);
-   
    runControl();		/* call run control state machine */
 
    uint32_t t = millis();
@@ -199,7 +194,8 @@ int16_t syncLoop(void)
    {
     encTmo = 2;			/* reset timer */
    }
-#endif   
+#endif
+   
    pollBufChar();		/* check for data to output */
    if (chRdy())			/* if character available */
    {
