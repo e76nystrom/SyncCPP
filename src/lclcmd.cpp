@@ -468,7 +468,7 @@ void lclcmd(int ch)
   }
   if constexpr (DBGTRK1L)
   {
-   int16_t i = sizeof(trkbuf) / sizeof(int);
+   int16_t i = sizeof(trkbuf) / sizeof(int16_t);
    while (--i >= 0)
    {
     int *p = (int *) &trkbuf[idx];
