@@ -50,6 +50,14 @@ T_PINDEF pinDef[] =
 
 extern "C" unsigned int getSP(void);
 
+#if defined(CLION)
+#define __bss_start__ _sbss
+#define __bss_end__ _ebss
+#define __data_start__ _sdata
+#define __data_end__ _edata
+#define __stack _estack
+#define __Main_Stack_Limit _end
+#endif	/* CLION */
 extern char __bss_start__;
 extern char __bss_end__;
 extern char __data_start__;

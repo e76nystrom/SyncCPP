@@ -189,9 +189,11 @@ void SystemClock_Config(void)
 
 /* USER CODE BEGIN 4 */
 
+#if !defined(CLION)
 void _init(void)
 {
 }
+#endif
 
 caddr_t _sbrk(int incr)
 {

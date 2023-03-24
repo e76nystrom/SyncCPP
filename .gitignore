@@ -31,6 +31,8 @@
 *.out
 *.app
 
+*.bak
+
 .gitattributes
 .settings/*
 Debug/*
@@ -41,3 +43,4 @@ cscope.out
 *.gpdsc
 /Debug/
 STM32CubeIDE/
+cmake-build-debug/*

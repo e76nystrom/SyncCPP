@@ -164,7 +164,7 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="lathe_src/exit.S|lathe_src/syncfunc.cpp|lathe_src/zcontrol.cpp|lathe_src/xcontrol.cpp|lathe_src/stub.c|lathe_src/stm32Info.cpp|lathe_src/serialio.cpp|lathe_src/remvar.cpp|lathe_src/remfunc.cpp|lathe_src/remcmd.cpp|lathe_src/pidAutoTune.cpp|lathe_src/pid.cpp|lathe_src/mainLoop.cpp|lathe_src/lclcmdX.cpp|lathe_src/lclcmd.cpp|lathe_src/lcd.cpp|lathe_src/latheX.cpp|lathe_src/lathe.cpp|lathe_src/interrupts.cpp|lathe_src/i2cx.cpp|lathe_src/handler.S|lathe_src/getSP.S|lathe_src/encoder.cpp|lathe_src/arc.cpp|STM32CubeIDE|Drivers/CMSIS/Device/ST/STM32F1xx/Source/Templates/system_stm32f1xx.c|system|TrueSTUDIO|src" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name=""/>
+						<entry excluding="cmake-build-debug|lathe_src/exit.S|lathe_src/syncfunc.cpp|lathe_src/zcontrol.cpp|lathe_src/xcontrol.cpp|lathe_src/stub.c|lathe_src/stm32Info.cpp|lathe_src/serialio.cpp|lathe_src/remvar.cpp|lathe_src/remfunc.cpp|lathe_src/remcmd.cpp|lathe_src/pidAutoTune.cpp|lathe_src/pid.cpp|lathe_src/mainLoop.cpp|lathe_src/lclcmdX.cpp|lathe_src/lclcmd.cpp|lathe_src/lcd.cpp|lathe_src/latheX.cpp|lathe_src/lathe.cpp|lathe_src/interrupts.cpp|lathe_src/i2cx.cpp|lathe_src/handler.S|lathe_src/getSP.S|lathe_src/encoder.cpp|lathe_src/arc.cpp|STM32CubeIDE|Drivers/CMSIS/Device/ST/STM32F1xx/Source/Templates/system_stm32f1xx.c|system|TrueSTUDIO|src" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name=""/>
 						<entry excluding="_write.c|Timer.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
 					</sourceEntries>
 				</configuration>
