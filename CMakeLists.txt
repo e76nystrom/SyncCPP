@@ -12,6 +12,7 @@ set(CMAKE_OBJCOPY arm-none-eabi-objcopy)
 set(CMAKE_OBJDUMP arm-none-eabi-objdump)
 set(SIZE arm-none-eabi-size)
 set(CMAKE_TRY_COMPILE_TARGET_TYPE STATIC_LIBRARY)
+set(mcpu cortex-m3)
 
 set(CMAKE_VERBOSE_MAKEFILE on)
 set(INTERMEDIATE off)
@@ -29,8 +30,7 @@ set(CMAKE_C_STANDARD 11)
 #Uncomment for software floating point
 #add_compile_options(-mfloat-abi=soft)
 
-#add_compile_options(-mcpu=cortex-m4 -mthumb -mthumb-interwork)
-add_compile_options(-mcpu=cortex-m3 -mthumb -mthumb-interwork)
+add_compile_options(-mcpu=cortex-m4 -mthumb -mthumb-interwork)
 add_compile_options(-fno-exceptions -ffunction-sections -fdata-sections -fno-common -fmessage-length=0)
 add_compile_options(-fno-move-loop-invariants --save-temps)
 
@@ -68,8 +68,8 @@ set(SOURCES1 ../LatheCPP/lathe_src/spix.cpp)
 set(LINKER_SCRIPT ${CMAKE_SOURCE_DIR}/STM32F103C8TX_FLASH.ld)
 
 add_link_options(-Wl,-gc-sections,--print-memory-usage,-Map=${PROJECT_BINARY_DIR}/${PROJECT_NAME}.map)
-#add_link_options(-mcpu=cortex-m4 -mthumb -mthumb-interwork)
-add_link_options(-mcpu=cortex-m3 -mthumb -mthumb-interwork)
+add_link_options(-Wl,--no-warn-rwx-segments)
+add_link_options(-mcpu=cortex-m4 -mthumb -mthumb-interwork)
 add_link_options(-T ${LINKER_SCRIPT})
 
 add_executable(${PROJECT_NAME}.elf ${SOURCES} ${SOURCES1} ${LINKER_SCRIPT})
