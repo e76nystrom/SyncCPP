@@ -145,7 +145,7 @@
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.linker.nostart.1831960898" name="Do not use standard start files (-nostartfiles)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.linker.nostart" value="true" valueType="boolean"/>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.linker.usenewlibnano.1504877102" name="Use newlib-nano (--specs=nano.specs)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.linker.usenewlibnano" useByScannerDiscovery="false" value="false" valueType="boolean"/>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.linker.printmap.46513765" name="Print link map (-Xlinker --print-map)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.linker.printmap" useByScannerDiscovery="false" value="false" valueType="boolean"/>
-								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.linker.other.1762060301" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.linker.other" value="-Wl,--no-warn-rwx-segments" valueType="string"/>
+								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.linker.other.1762060301" name="Other linker flags" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.linker.other" value="-Wl,--no-warn-rwx-segments" valueType="string"/>
 								<inputType id="ilg.gnuarmeclipse.managedbuild.cross.tool.cpp.linker.input.297898376" superClass="ilg.gnuarmeclipse.managedbuild.cross.tool.cpp.linker.input">
 									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
 									<additionalInput kind="additionalinput" paths="$(LIBS)"/>
@@ -166,7 +166,7 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="cmake-build-debug|lathe_src/exit.S|lathe_src/syncfunc.cpp|lathe_src/zcontrol.cpp|lathe_src/xcontrol.cpp|lathe_src/stub.c|lathe_src/stm32Info.cpp|lathe_src/serialio.cpp|lathe_src/remvar.cpp|lathe_src/remfunc.cpp|lathe_src/remcmd.cpp|lathe_src/pidAutoTune.cpp|lathe_src/pid.cpp|lathe_src/mainLoop.cpp|lathe_src/lclcmdX.cpp|lathe_src/lclcmd.cpp|lathe_src/lcd.cpp|lathe_src/latheX.cpp|lathe_src/lathe.cpp|lathe_src/interrupts.cpp|lathe_src/i2cx.cpp|lathe_src/handler.S|lathe_src/getSP.S|lathe_src/encoder.cpp|lathe_src/arc.cpp|STM32CubeIDE|Drivers/CMSIS/Device/ST/STM32F1xx/Source/Templates/system_stm32f1xx.c|system|TrueSTUDIO|src" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name=""/>
+						<entry excluding="lathe_src/cdcTask.cpp|cmake-build-debug|lathe_src/exit.S|lathe_src/syncfunc.cpp|lathe_src/zcontrol.cpp|lathe_src/xcontrol.cpp|lathe_src/stub.c|lathe_src/stm32Info.cpp|lathe_src/serialio.cpp|lathe_src/remvar.cpp|lathe_src/remfunc.cpp|lathe_src/remcmd.cpp|lathe_src/pidAutoTune.cpp|lathe_src/pid.cpp|lathe_src/mainLoop.cpp|lathe_src/lclcmdX.cpp|lathe_src/lclcmd.cpp|lathe_src/lcd.cpp|lathe_src/latheX.cpp|lathe_src/lathe.cpp|lathe_src/interrupts.cpp|lathe_src/i2cx.cpp|lathe_src/handler.S|lathe_src/getSP.S|lathe_src/encoder.cpp|lathe_src/arc.cpp|STM32CubeIDE|Drivers/CMSIS/Device/ST/STM32F1xx/Source/Templates/system_stm32f1xx.c|system|TrueSTUDIO|src" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name=""/>
 						<entry excluding="_write.c|Timer.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
 					</sourceEntries>
 				</configuration>
