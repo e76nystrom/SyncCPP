@@ -1,18 +1,29 @@
 #include <stdint.h>
 #define NO_REM_MACROS
-#include "syncParmList.h"
-
+#include "syncParm.h"
 #include "syncStruct.h"
 
 T_SYNC_VAR sVar;
 
-void setSyncVar(int parm, T_DATA_UNION val);
-void getSyncVar(int parm, P_DATA_UNION val);
+#define FLT (0x80)
+#define SIZE_MASK (0x7)
 
-void setSyncVar(int parm, T_DATA_UNION val)
+unsigned char syncSize[] =
+{
+ sizeof(sVar.syncCycle),                /* 0x00 sync cycle length */
+ sizeof(sVar.syncOutput),               /* 0x01 sync outputs per cycle */
+ sizeof(sVar.syncPrescaler),            /* 0x02 sync prescaler */
+ sizeof(sVar.syncEncoder),              /* 0x03 sync encoder pulses */
+ sizeof(sVar.syncMaxParm),              /* 0x04 sync maximum parameter */
+};
+
+void setSyncVar(const int parm, const T_DATA_UNION val)
 {
  switch(parm)
  {
+ default:
+  break;
+
  case SYNC_CYCLE:                /*  0 0x00 sync cycle length */
   sVar.syncCycle = val.t_uint16_t;
   break;
@@ -33,13 +44,16 @@ void setSyncVar(int parm, T_DATA_UNION val)
   sVar.syncMaxParm = val.t_int16_t;
   break;
 
- };
+ }
 }
 
-void getSyncVar(int parm, P_DATA_UNION val)
+void getSyncVar(const int parm, const P_DATA_UNION val)
 {
  switch(parm)
  {
+ default:
+  break;
+
  case SYNC_CYCLE:                /*  0 0x00 sync cycle length */
   val->t_uint16_t = sVar.syncCycle;
   break;
@@ -60,5 +74,5 @@ void getSyncVar(int parm, P_DATA_UNION val)
   val->t_int16_t = sVar.syncMaxParm;
   break;
 
- };
+ }
 }

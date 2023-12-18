@@ -1,4 +1,5 @@
-#if 1	// <-
+#if !defined(SERIALIO_INC)	// <-
+#define SERIALIO_INC
 
 #if !defined(EXT)
 #define EXT extern
@@ -189,4 +190,4 @@ EXT int isrCount;
 EXT unsigned int isrOverflow;
 EXT char isrBuf[ISR_BUF_SIZE];
 
-#endif	/* __SERIALIO_INC__ */ // ->
+#endif  /* SERIALIO_INC */	// ->

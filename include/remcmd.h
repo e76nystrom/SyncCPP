@@ -1,4 +1,5 @@
-#if 1	// <-
+#if !defined(REMCMD_INC)	// <-
+#define REMCMD_INC
 
 #if !defined(EXT)
 #define EXT extern
@@ -40,7 +41,7 @@ extern T_REM_ACTION remAction;
 
 extern T_REM_ACTION spiAction;
 
-void remcmd(P_REM_ACTION);
+void remCmd(P_REM_ACTION);
 
 void loadVal(P_REM_ACTION act);
 
@@ -49,6 +50,6 @@ char getHex(P_REM_ACTION act);
 void sndHex(void (*putCh)(char ch), unsigned char *p, int size);
 
 #include "syncCmdList.h"
-#include "syncParmList.h"
+#include "syncParm.h"
 
-#endif	/* __REMCMD_INC__*/ // ->
+#endif  /* REMCMD_INC */	// ->

@@ -1,4 +1,5 @@
-#if 1	// <-
+#if !defined(SYNC_INC)	// <-
+#define SYNC_INC
 
 #if !defined(EXT)
 #define EXT extern
@@ -171,4 +172,4 @@ typedef union
  };
 } BITWORD;
 
-#endif	/* __SYNC_INC__ */ // ->
+#endif  /* SYNC_INC */	// ->

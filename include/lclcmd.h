@@ -1,4 +1,5 @@
-#if 1	// <-
+#if !defined(LCLCMD_INC)	// <-
+#define LCLCMD_INC
 
 #if !defined(EXT)
 #define EXT extern
@@ -6,4 +7,4 @@
 
 void lclcmd(int ch);
 
-#endif	// ->
+#endif  /* LCLCMD_INC */	// ->

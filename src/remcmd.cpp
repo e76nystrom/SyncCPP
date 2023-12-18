@@ -20,6 +20,7 @@
 
 #define EXT
 #include "remcmd.h"
+#include "remStruct.h"
 
 #if defined(__REMCMD_INC__)	// <-
 
@@ -63,7 +64,7 @@ extern T_REM_ACTION remAction;
 
 extern T_REM_ACTION spiAction;
 
-void remcmd(P_REM_ACTION);
+void remCmd(P_REM_ACTION);
 
 void loadVal(P_REM_ACTION act);
 
@@ -72,7 +73,7 @@ char getHex(P_REM_ACTION act);
 void sndHex(void (*putCh)(char ch), unsigned char *p, int size);
 
 #include "syncCmdList.h"
-#include "syncParmList.h"
+#include "syncParm.h"
 
 #endif	/* __REMCMD_INC__*/ // ->
 #ifdef __REMCMD__
@@ -83,9 +84,7 @@ T_REM_ACTION remAction = {&getRem, &putRem};
 
 T_REM_ACTION spiAction = {&getSPI, &putSPI};
 
-#include "syncParm.h"
-
-void remcmd(P_REM_ACTION act)
+void remCmd(P_REM_ACTION act)
 {
  //P_PARM valptr;
  int parm;
@@ -112,11 +111,11 @@ void remcmd(P_REM_ACTION act)
   cmpTmr.stop = 1;		/* set stop flag */
   break;
   
- case SYNC_LOADVAL:		/* load a local parameter */
+ case SYNC_LOAD_VAL:		/* load a local parameter */
   loadVal(act);
   break;
 
- case SYNC_LOADMULTI:		/* load multiple parameters */
+ case SYNC_LOAD_MULTI:		/* load multiple parameters */
  {
   getHex(act);
   int count = valRem;
@@ -126,7 +125,7 @@ void remcmd(P_REM_ACTION act)
  }
  break;
 
- case SYNC_READVAL:		/* read a local parameter */
+ case SYNC_READ_VAL:		/* read a local parameter */
  {
   T_DATA_UNION parmVal;
   getHex(act);			/* save the parameter number */
@@ -135,10 +134,10 @@ void remcmd(P_REM_ACTION act)
   {
    parmVal.t_int = 0;
    getSyncVar(parm, &parmVal);
-   int size = syncParm[parm];
+   int size = syncSize[parm];
 #if DBG_LOAD
    printf("r p %2x s %d v %8x\n",
-	  (unsigned int) parm, size, parmVal.t_unsigned_int);
+	  (unsigned int) parm, size, parmVal.t_uint_t);
 #endif
    sndHex(act->putCh, (unsigned char *) &parmVal.t_char, size);
   }
@@ -192,7 +191,7 @@ void loadVal(P_REM_ACTION act)
   T_DATA_UNION parmVal;
   getHex(act);	/* get the value */
 #if DBG_LOAD
-  int size = syncParm[parm]; /* value size */
+  int size = syncSize[parm]; /* value size */
   printf("w parm %2x s %d val %8x\n", parm, size, (unsigned) valRem);
 #endif
   parmVal.t_int = valRem;
